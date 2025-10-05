@@ -1,2 +1,5 @@
 build-essential
+gcc
+g++
 gfortran
+python3-dev
