@@ -21,28 +21,158 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# CSS
+# --- VISUAL THEME: Dark Space Theme + Subtle Starfield & Nebula ---
 st.markdown(
     """
 <style>
-.main-header {font-size:3rem;color:#1f77b4;text-align:center;margin-bottom:2rem;}
-.mission-badge {display:inline-block;padding:0.25rem 0.75rem;margin:0.25rem;
-                border-radius:1rem;font-weight:bold;}
-.kepler-badge {background:#ff7f0e;color:#fff;}
-.tess-badge   {background:#2ca02c;color:#fff;}
+/* Import a futuristic font (falls back gracefully) */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+
+:root{
+  --bg:#03040a; /* deep space black */
+  --panel: rgba(255,255,255,0.03);
+  --accent-1: #6EE7F3; /* cyan */
+  --accent-2: #9B7BFF; /* purple */
+  --accent-3: #FFB86B; /* warm */
+  --glass: rgba(255,255,255,0.02);
+}
+
+/* Page background: starfield using multiple layered radial-gradients for subtle depth */
+html, body, .appview-container, .main {
+  background: radial-gradient(ellipse at 10% 10%, rgba(120,94,255,0.06), transparent 8%),
+              radial-gradient(ellipse at 90% 80%, rgba(14,165,233,0.03), transparent 8%),
+              linear-gradient(180deg, rgba(2,6,23,1) 0%, rgba(6,12,30,1) 100%);
+  color: #E6F0FF;
+  font-family: 'Rajdhani', 'Orbitron', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+/* Starfield animation: generated with repeating radial-gradient and keyframes */
+#starfield{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px);
+  background-size: 1200px 1200px, 800px 800px, 400px 400px;
+  opacity: 0.28;
+  animation: drift 60s linear infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes drift{
+  from { transform: translateY(0px) translateX(0px); }
+  to   { transform: translateY(-120px) translateX(60px); }
+}
+
+/* Nebula glow overlay */
+#nebula{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 15% 20%, rgba(155,123,255,0.06), transparent 8%),
+              radial-gradient(circle at 80% 80%, rgba(110,231,243,0.035), transparent 8%),
+              radial-gradient(circle at 70% 30%, rgba(255,184,107,0.02), transparent 6%);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+/* Page container to keep controls above the background */
+.streamlit-container, .block-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Headline styling */
+.main-header {
+  font-size: 2.4rem !important;
+  color: white;
+  text-align: center;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.6px;
+  text-shadow: 0 6px 24px rgba(147,122,255,0.16), 0 1px 1px rgba(0,0,0,0.6);
+}
+
+.sub-header {
+  color: rgba(230,240,255,0.85);
+  text-align:center;
+  margin-bottom: 1.25rem;
+}
+
+/* Glowing badges */
+.mission-badge {
+  display:inline-block;padding:0.25rem 0.75rem;margin:0.25rem;border-radius:999px;font-weight:700;font-size:0.9rem;
+  box-shadow: 0 6px 18px rgba(155,123,255,0.08);
+}
+.kepler-badge {background: linear-gradient(90deg,#ff7f0e22,#ff7f0e44); color:#fff}
+.tess-badge   {background: linear-gradient(90deg,#2ca02c22,#2ca02c44); color:#fff}
+
+/* Mode card: glass panel with subtle glow */
 .mode-card {
     padding: 2rem;
     border-radius: 1rem;
-    border: 2px solid #ddd;
-    margin: 1rem 0;
+    border: 1px solid rgba(255,255,255,0.04);
+    margin: 0.6rem 0;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.28s ease-in-out;
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    box-shadow: 0 6px 30px rgba(2,6,23,0.6);
 }
 .mode-card:hover {
-    border-color: #1f77b4;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-6px);
+    border-color: rgba(155,123,255,0.55);
+    box-shadow: 0 16px 48px rgba(91,50,255,0.12);
 }
+
+/* Buttons — modern, rounded and slightly glowing */
+button.stButton, div.stButton > button {
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  box-shadow: 0 10px 24px rgba(6,12,30,0.6);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  background: linear-gradient(90deg,var(--accent-1), var(--accent-2));
+  color: #021027;
+}
+
+button.stButton:hover, div.stButton > button:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(110,231,243,0.12);
+}
+
+/* Disabled button slightly muted */
+button[disabled], button:disabled{ opacity: 0.5; filter: grayscale(0.15); }
+
+/* Sidebar styling */
+[data-testid='stSidebar'] { background: linear-gradient(180deg, rgba(3,6,15,0.9), rgba(6,10,20,0.85)); border-right: 1px solid rgba(255,255,255,0.02); }
+
+/* Panels / cards */
+.widget-box, .stMarkdown, .stExpander { background: transparent !important; }
+
+/* Metrics: make them stand out */
+.metric-container { background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); padding: 0.8rem; border-radius: 10px; }
+
+/* Info boxes */
+.stInfo, .stWarning, .stError {
+  border-radius: 0.75rem; padding: 0.65rem 0.9rem; margin-bottom:0.6rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 800px){
+  .main-header { font-size: 1.6rem !important; }
+}
+
 </style>
+
+<!-- Background layers placed outside Streamlit flow -->
+<div id="starfield"></div>
+<div id="nebula"></div>
+
 """,
     unsafe_allow_html=True,
 )
@@ -81,12 +211,12 @@ def check_hybrid_model() -> bool:
 
 def show_homepage():
     """Display homepage with mode selection"""
-    
-    st.markdown('<h1 class="main-header">🔭 Professional Exoplanet Discovery System</h1>', 
-                unsafe_allow_html=True)
+    # Animated / styled header block (keeps semantics intact)
     st.markdown(
-        '<div style="text-align:center;margin-bottom:3rem;color:#666;font-size:1.2rem;">'
-        "NASA-Standard Analysis Pipeline with Transit Least Squares (TLS)</div>",
+        '<div style="text-align:center;position:relative;z-index:2;">'
+        "<h1 class=\"main-header\">🔭 Professional Exoplanet Discovery System</h1>"
+        "<div class=\"sub-header\">NASA-Standard Analysis Pipeline · Transit Least Squares (TLS)</div>"
+        "</div>",
         unsafe_allow_html=True,
     )
     
@@ -98,8 +228,8 @@ def show_homepage():
     with col1:
         st.markdown("""
         <div class="mode-card">
-        <h2 style='text-align:center;'>📚 Known Planets Database</h2>
-        <h3 style='text-align:center;color:#666;'>Browse NASA's Archive</h3>
+        <h2 style='text-align:center;margin-bottom:4px;'>📚 Known Planets Database</h2>
+        <h4 style='text-align:center;color:#9fb3d9;margin-top:2px;'>Browse NASA's Archive</h4>
         </div>
         """, unsafe_allow_html=True)
         
@@ -109,11 +239,15 @@ def show_homepage():
         - View confirmed planets & candidates
         - See official NASA classifications
         - Access verified measurements
+        """)
         
+        st.markdown("""
         **Data from:**
         - Kepler Mission (10,000+ objects)
         - TESS Mission (7,000+ objects)
+        """)
         
+        st.markdown("""
         **Best for:**
         - Learning about known planets
         - Verified scientific data
@@ -127,8 +261,8 @@ def show_homepage():
     with col2:
         st.markdown("""
         <div class="mode-card">
-        <h2 style='text-align:center;'>🤖 Classify New Planets</h2>
-        <h3 style='text-align:center;color:#666;'>AI-Powered Discovery</h3>
+        <h2 style='text-align:center;margin-bottom:4px;'>🤖 Classify New Planets</h2>
+        <h4 style='text-align:center;color:#9fb3d9;margin-top:2px;'>AI-Powered Discovery</h4>
         </div>
         """, unsafe_allow_html=True)
         
@@ -138,13 +272,17 @@ def show_homepage():
         - Run AI/ML classification
         - Detect new planet candidates
         - Professional vetting pipeline
+        """)
         
+        st.markdown("""
         **Technology:**
         - Transit Least Squares (TLS)
         - Machine Learning classifier
         - NASA-standard vetting
         - Advanced signal processing
+        """)
         
+        st.markdown("""
         **Best for:**
         - Finding new candidates
         - Research & discovery
@@ -209,7 +347,6 @@ def show_homepage():
 
 def run_known_planets_mode():
     """Run the known planets database interface"""
-    
     # Back button
     if st.sidebar.button("⬅️ Back to Home"):
         st.session_state.mode = "home"
@@ -227,7 +364,6 @@ def run_known_planets_mode():
 
 def run_classify_new_mode():
     """Run the ML classification pipeline"""
-    
     # Back button
     if st.sidebar.button("⬅️ Back to Home"):
         st.session_state.mode = "home"
@@ -255,7 +391,7 @@ def run_classify_new_mode():
     # Header
     st.markdown('<h1 class="main-header">🤖 Classify New Planets</h1>', unsafe_allow_html=True)
     st.markdown(
-        '<div style="text-align:center;margin-bottom:2rem;color:#666;">'
+        '<div style="text-align:center;margin-bottom:2rem;color:#9fb3d9;">'
         "AI-Powered Exoplanet Detection Pipeline</div>",
         unsafe_allow_html=True,
     )
