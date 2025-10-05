@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import sys
+import os
 from pathlib import Path
 import traceback
 
@@ -22,13 +23,41 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - Allow React frontend to connect
+# ================================================================
+# CORS CONFIGURATION - Fixed for proper React frontend integration
+# ================================================================
+
+# Get environment (development vs production)
+ENV = os.getenv("ENVIRONMENT", "development")
+
+if ENV == "development":
+    # Development: Allow all localhost origins
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:8080",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:8080",
+    ]
+    allow_credentials = True
+else:
+    # Production: Specify your deployed frontend URL
+    # Set FRONTEND_URL environment variable in production
+    frontend_url = os.getenv("FRONTEND_URL", "")
+    origins = [frontend_url] if frontend_url else ["*"]
+    allow_credentials = bool(frontend_url)  # Only if specific origin is set
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # React dev servers
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=origins,
+    allow_credentials=allow_credentials,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
 
 # ================================================================
