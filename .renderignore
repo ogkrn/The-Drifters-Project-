@@ -1,0 +1,19 @@
+# Don't upload these to Render
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.git/
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+test_*.py
+*_test.py
